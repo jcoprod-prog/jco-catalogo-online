@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JCO Vendas - Catálogo Online</title>
+
+    <script>
+        const SUPABASE_URL = "{{ config.SUPABASE_URL }}";
+        const BUCKET_NAME = "imagens-projeto";
+    </script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/catalogo.css', v=version_timestamp) }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+</head>
+<body>
+
+    <nav id="nav-drawer" class="nav-drawer">
+        <div class="drawer-header">
+            <h3>Menu</h3>
+            <button id="close-drawer-btn" class="close-btn">&times;</button>
+        </div>
+        <ul>
+            <li><a href="/catalogo"><i class="fas fa-store"></i> Início</a></li>
+            <li><a href="/meus-pedidos"><i class="fas fa-box"></i> Meus Pedidos</a></li>
+            <li><a href="#"><i class="fas fa-info-circle"></i> Sobre Nós</a></li>
+            <li><a href="#"><i class="fas fa-headset"></i> Contato</a></li>
+        </ul>
+    </nav>
+    <div id="overlay" class="overlay"></div>
+
+    <header class="main-header">
+        <div class="header-content">
+            <button id="menu-btn" class="menu-btn"><i class="fas fa-bars"></i></button>
+            <div class="logo-title">JCO Vendas</div>
+            <a href="/carrinho" class="cart-btn">
+                <i class="fas fa-shopping-cart"></i>
+                <span id="cart-count">0</span>
+            </a>
+        </div>
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" id="search-bar" placeholder="Buscar em nosso catálogo...">
+        </div>
+    </header>
+
+    <main>
+        <section class="banner-section">
+            <div class="swiper" id="banner-swiper">
+                <div class="swiper-wrapper" id="banner-list">
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+        </section>
+        <section class="categories-section">
+            <div class="section-header">
+                <h2>Categorias</h2>
+            </div>
+            <div id="category-list" class="category-list"></div>
+        </section>
+
+        <section class="products-section">
+            <div class="section-header">
+                <h2 id="products-section-title">Todos os Produtos</h2>
+            </div>
+            <div id="product-list" class="product-grid">
+                <p>Carregando produtos...</p>
+            </div>
+            
+            <div id="load-more-container" style="text-align: center; padding: 20px;">
+                </div>
+            </section>
+            <div id="imageZoomModal" class="image-zoom-modal" onclick="closeImageModal()">
+                <span class="close-zoom">&times;</span>
+                <img class="modal-zoom-content" id="img01">
+                <div id="caption"></div>
+            </div>
+    </main>
+
+    <footer>
+        <p>JCO Vendas &copy; 2026</p>
+    </footer>
+
+    <a href="https://wa.me/5577991711975" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/catalogo.js', v=version_timestamp) }}"></script>
+</body>
+</html>
