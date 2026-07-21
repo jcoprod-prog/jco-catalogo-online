@@ -70,3 +70,34 @@ def api_products():
         "items": produtos,
         "total": len(produtos)
     })
+    
+@catalogo_bp.route('/api/products/by-ids', methods=['POST'])
+def api_products_by_ids():
+    supabase = get_supabase()
+    if not supabase:
+        return jsonify([])
+
+    dados = request.get_json() or {}
+    
+    # O JavaScript pode enviar uma lista direta [1, 2] ou um dicionário {"ids": [1, 2]}
+    ids = dados.get('ids', []) if isinstance(dados, dict) else dados
+
+    if not ids:
+        return jsonify([])
+
+    # Busca no banco de dados apenas os produtos que estão na lista de IDs
+    resposta = supabase.table('produtos_nuvem').select('*').in_('id', ids).execute()
+
+    # Aplica o nosso tradutor para o JavaScript entender
+    produtos = []
+    for prod in resposta.data:
+        produtos.append({
+            "id": prod.get("id"),
+            "name": prod.get("nome") or prod.get("name") or "Produto Misterioso",
+            "description": prod.get("descricao") or prod.get("description") or "",
+            "price_catalog": prod.get("preco_catalogo") or prod.get("price_catalog") or 0.0,
+            "stock_quantity": prod.get("estoque_atual") or prod.get("stock_quantity") or 0,
+            "photo_path": prod.get("caminho_foto") or prod.get("photo_path") or ""
+        })
+
+    return jsonify(produtos)
