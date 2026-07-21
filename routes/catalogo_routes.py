@@ -5,7 +5,7 @@ from supabase import create_client, Client
 catalogo_bp = Blueprint('catalogo', __name__)
 
 @catalogo_bp.route('/')
-def index():
+def pagina_catalogo():
     return render_template('catalogo.html')
 
 @catalogo_bp.route('/carrinho')
