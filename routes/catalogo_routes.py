@@ -101,3 +101,24 @@ def api_products_by_ids():
         })
 
     return jsonify(produtos)
+
+@catalogo_bp.route('/api/orders', methods=['POST'])
+def api_orders():
+    # Recebe os dados (cliente e itens) enviados pelo carrinho
+    dados = request.get_json() or {}
+    
+    # Gera um número de pedido aleatório de 4 dígitos para o comprovante
+    import random
+    numero_pedido = random.randint(1000, 9999)
+    
+    print(f"NOVO PEDIDO RECEBIDO! Número: {numero_pedido}")
+    print("Dados do cliente:", dados.get('client_info'))
+    
+    # Aqui vamos colocar depois a lógica de gravação no Supabase
+    # (Tabelas 'pedidos_nuvem' e 'itens_pedido_nuvem')
+    
+    # Devolve o formato exato de sucesso que o arquivo carrinho.js espera
+    return jsonify({
+        "order_id": numero_pedido,
+        "message": "Pedido recebido com sucesso!"
+    }), 200
