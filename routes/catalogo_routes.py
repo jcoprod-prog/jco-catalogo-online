@@ -104,21 +104,71 @@ def api_products_by_ids():
 
 @catalogo_bp.route('/api/orders', methods=['POST'])
 def api_orders():
-    # Recebe os dados (cliente e itens) enviados pelo carrinho
+    supabase = get_supabase()
+    if not supabase:
+        return jsonify({"message": "Erro de conexão com o banco"}), 500
+
     dados = request.get_json() or {}
+    client_info = dados.get('client_info', {})
+    items = dados.get('items', {})
     
-    # Gera um número de pedido aleatório de 4 dígitos para o comprovante
-    import random
-    numero_pedido = random.randint(1000, 9999)
+    if not client_info or not items:
+        return jsonify({"message": "Dados incompletos"}), 400
+        
+    # 1. Calcula o total do pedido somando (quantidade * preço) de cada item
+    total = 0.0
+    for key, item in items.items():
+        total += float(item.get('quantity', 0)) * float(item.get('price', 0.0))
+        
+    # 2. Prepara os dados para a tabela pedidos_nuvem
+    pedido_data = {
+        "cliente_nome": client_info.get('name', 'Sem nome'),
+        "cliente_endereco": client_info.get('address', ''),
+        "observacoes": client_info.get('notes', ''),
+        "total": total,
+        "status": "pendente"
+    }
     
-    print(f"NOVO PEDIDO RECEBIDO! Número: {numero_pedido}")
-    print("Dados do cliente:", dados.get('client_info'))
+    # Grava o pedido principal
+    resp_pedido = supabase.table('pedidos_nuvem').insert(pedido_data).execute()
     
-    # Aqui vamos colocar depois a lógica de gravação no Supabase
-    # (Tabelas 'pedidos_nuvem' e 'itens_pedido_nuvem')
+    if not resp_pedido.data:
+        return jsonify({"message": "Erro ao criar pedido"}), 500
+        
+    # Pega o ID (número) do pedido que acabou de ser gerado no banco
+    pedido_id = resp_pedido.data[0]['id']
     
-    # Devolve o formato exato de sucesso que o arquivo carrinho.js espera
+    # 3. Prepara os itens para a tabela itens_pedido_nuvem
+    itens_data = []
+    for key, item in items.items():
+        itens_data.append({
+            "pedido_id": pedido_id,
+            "produto_id": item.get('product_id'),
+            "quantidade": item.get('quantity'),
+            "preco_unitario": item.get('price')
+        })
+        
+    # Grava os itens vinculados ao ID do pedido
+    if itens_data:
+        supabase.table('itens_pedido_nuvem').insert(itens_data).execute()
+        
+    print(f"PEDIDO GRAVADO COM SUCESSO NO BANCO! ID: {pedido_id}")
+    
+    # Devolve a resposta de sucesso para o carrinho
     return jsonify({
-        "order_id": numero_pedido,
+        "order_id": pedido_id,
         "message": "Pedido recebido com sucesso!"
     }), 200
+
+# Rota para evitar o erro 404 quando o JS redirecionar
+@catalogo_bp.route('/meus-pedidos')
+def meus_pedidos():
+    # Como ainda não montamos a tela complexa de histórico, devolvemos uma tela de sucesso provisória
+    return """
+    <div style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+        <h2 style="color: #28a745;">Pedido Finalizado com Sucesso!</h2>
+        <p>O seu pedido foi enviado para o Mercadinho Oliveira.</p>
+        <br>
+        <a href="/" style="display: inline-block; padding: 12px 24px; background-color: #007bff; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Voltar ao Catálogo</a>
+    </div>
+    """
