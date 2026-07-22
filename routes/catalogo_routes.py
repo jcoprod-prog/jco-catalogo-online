@@ -184,12 +184,50 @@ def api_orders():
 # Rota para evitar o erro 404 quando o JS redirecionar
 @catalogo_bp.route('/meus-pedidos')
 def meus_pedidos():
-    # Como ainda não montamos a tela complexa de histórico, devolvemos uma tela de sucesso provisória
-    return """
-    <div style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-        <h2 style="color: #28a745;">Pedido Finalizado com Sucesso!</h2>
-        <p>O seu pedido foi enviado para o Mercadinho Oliveira.</p>
-        <br>
-        <a href="/" style="display: inline-block; padding: 12px 24px; background-color: #007bff; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Voltar ao Catálogo</a>
-    </div>
-    """
+    return render_template('meus_pedidos.html')
+
+@catalogo_bp.route('/api/meus_pedidos', methods=['POST'])
+def api_meus_pedidos():
+    supabase = get_supabase()
+    if not supabase:
+        return jsonify({"message": "Erro de conexão"}), 500
+
+    dados = request.get_json() or {}
+    order_ids = dados.get('order_ids', [])
+
+    if not order_ids:
+        return jsonify([])
+
+    # 1. Busca os pedidos principais na nuvem
+    resp_pedidos = supabase.table('pedidos_nuvem').select('*').in_('id', order_ids).execute()
+    pedidos = resp_pedidos.data
+    if not pedidos:
+        return jsonify([])
+
+    # 2. Busca os itens desses pedidos
+    resp_itens = supabase.table('itens_pedido_nuvem').select('*').in_('pedido_id', order_ids).execute()
+    itens = resp_itens.data
+
+    # 3. Busca o nome dos produtos usando os IDs dos itens
+    produto_ids = list(set([item['produto_id'] for item in itens]))
+    produtos_dict = {}
+    if produto_ids:
+        resp_produtos = supabase.table('produtos_nuvem').select('id, nome, name').in_('id', produto_ids).execute()
+        for p in resp_produtos.data:
+            produtos_dict[str(p['id'])] = p.get('nome') or p.get('name') or "Produto Misterioso"
+
+    # 4. Junta tudo para o JavaScript exibir na tela bonitinho
+    for pedido in pedidos:
+        pedido['itens_detalhados'] = []
+        for item in itens:
+            if str(item['pedido_id']) == str(pedido['id']):
+                pedido['itens_detalhados'].append({
+                    "nome": produtos_dict.get(str(item['produto_id']), "Produto"),
+                    "quantidade": item.get('quantidade', 1),
+                    "preco_unitario": item.get('preco_unitario', 0.0)
+                })
+
+    # Ordena para o pedido mais novo aparecer no topo
+    pedidos.sort(key=lambda x: x['id'], reverse=True)
+
+    return jsonify(pedidos)
