@@ -80,11 +80,19 @@
                     
                     let itensHtml = '';
                     pedido.itens_detalhados.forEach(item => {
-                        const subtotal = item.quantidade * item.preco_unitario;
+                        const precoUnitario = parseFloat(item.preco_unitario || 0);
+                        const subtotal = item.quantidade * precoUnitario;
+                        
+                        const precoUnFormatado = precoUnitario.toFixed(2).replace('.', ',');
+                        const subtotalFormatado = subtotal.toFixed(2).replace('.', ',');
+                        
                         itensHtml += `
                             <div class="item-lista">
-                                <span>${item.quantidade}x ${item.nome}</span>
-                                <span>R$ ${subtotal.toFixed(2).replace('.', ',')}</span>
+                                <span>
+                                    ${item.quantidade}x ${item.nome} 
+                                    <span style="font-size: 0.85em; color: #888;">(R$ ${precoUnFormatado} un)</span>
+                                </span>
+                                <span>R$ ${subtotalFormatado}</span>
                             </div>
                         `;
                     });
