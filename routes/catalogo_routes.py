@@ -51,26 +51,47 @@ def api_products():
     if not supabase:
         return jsonify({"items": [], "total": 0})
         
-    # Busca TUDO, sem filtro de categoria ou de ativo
-    resposta = supabase.table('produtos_nuvem').select('*').execute()
+    # Pega qual categoria o usuário clicou no menu (se houver)
+    category_id = request.args.get('category_id')
+        
+    # Traz do maior ID para o menor (ordem decrescente / novidades primeiro)
+    resposta = supabase.table('produtos_nuvem').select('*').order('id', desc=True).execute()
     
     produtos = []
     for prod in resposta.data:
+        # 1. Só exibe o produto se ele estiver marcado como ativo
+        is_ativo = prod.get("ativo", prod.get("active", True))
+        if not is_ativo:
+            continue 
+            
+        # 2. VERIFICAÇÃO DE ESTOQUE: Se for nulo, zero ou negativo, esconde o produto
+        estoque = prod.get("estoque_atual", prod.get("stock_quantity", 0))
+        try:
+            # Tenta converter para número. Se for menor ou igual a 0, pula e não mostra
+            if estoque is None or float(estoque) <= 0:
+                continue
+        except (ValueError, TypeError):
+            # Se vier algum texto ou dado corrompido que não é número, esconde por segurança
+            continue
+            
+        # 3. Filtra pela categoria escolhida (se o usuário clicou em alguma)
+        id_da_categoria = str(prod.get("categoria_id", prod.get("category_id")))
+        if category_id and id_da_categoria != str(category_id):
+            continue
+            
         produtos.append({
             "id": prod.get("id"),
-            # Se não achar a coluna, coloca um nome de alerta
-            "name": prod.get("nome") or prod.get("name") or "Produto Misterioso",
-            "description": prod.get("descricao") or prod.get("description") or "Sem descrição",
-            "price_catalog": prod.get("preco_catalogo") or prod.get("price_catalog") or 0.0,
-            "stock_quantity": prod.get("estoque_atual") or prod.get("stock_quantity") or 10,
-            "photo_path": prod.get("caminho_foto") or prod.get("photo_path") or ""
+            "name": prod.get("nome", prod.get("name", "Produto sem nome")),
+            "description": prod.get("descricao", prod.get("description", "")),
+            "price_catalog": prod.get("preco_catalogo", prod.get("price_catalog", 0)),
+            "stock_quantity": estoque,
+            "photo_path": prod.get("caminho_foto", prod.get("photo_path", ""))
         })
         
     return jsonify({
         "items": produtos,
         "total": len(produtos)
     })
-    
 @catalogo_bp.route('/api/products/by-ids', methods=['POST'])
 def api_products_by_ids():
     supabase = get_supabase()
