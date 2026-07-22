@@ -31,6 +31,7 @@
             </form>
         </div>
     </div>
+<!-- FIM: MODAL DE BOAS VINDAS -->
 
     <nav id="nav-drawer" class="nav-drawer">
         <div class="drawer-header">
@@ -102,25 +103,6 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    // Função para mostrar a tela "Sobre Nós"
-    function abrirSobreNos() {
-        document.getElementById('modal-sobre').style.display = 'flex';
-        
-        // Isso aqui fecha o menu lateral automaticamente para a tela ficar limpa
-        const navDrawer = document.getElementById('nav-drawer');
-        const overlay = document.getElementById('overlay');
-        if(navDrawer) navDrawer.classList.remove('is-open');
-        if(overlay) overlay.classList.remove('is-open');
-    }
-
-    // Função para esconder a tela "Sobre Nós"
-    function fecharSobreNos() {
-        document.getElementById('modal-sobre').style.display = 'none';
-    }
-    <script src="{{ url_for('static', filename='js/catalogo.js', v=version_timestamp) }}"></script>
-
-
 <!-- INÍCIO: MODAL SOBRE NÓS -->
     <div id="modal-sobre" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
         <div style="background: white; padding: 30px; border-radius: 12px; max-width: 450px; text-align: center; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
@@ -152,6 +134,28 @@
             
         </div>
     </div>
-    <!-- FIM: MODAL SOBRE NÓS -->
+<!-- FIM: MODAL SOBRE NÓS -->
+
+    <!-- SCRIPTS NO FINAL (AGORA DO JEITO CERTO) -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/catalogo.js', v=version_timestamp) }}"></script>
+    
+    <script>
+        // Função para mostrar a tela "Sobre Nós"
+        function abrirSobreNos() {
+            document.getElementById('modal-sobre').style.display = 'flex';
+            
+            // Isso aqui fecha o menu lateral automaticamente para a tela ficar limpa
+            const navDrawer = document.getElementById('nav-drawer');
+            const overlay = document.getElementById('overlay');
+            if(navDrawer) navDrawer.classList.remove('is-open');
+            if(overlay) overlay.classList.remove('is-open');
+        }
+
+        // Função para esconder a tela "Sobre Nós"
+        function fecharSobreNos() {
+            document.getElementById('modal-sobre').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
