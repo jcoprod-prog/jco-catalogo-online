@@ -4,8 +4,11 @@
 // VERSÃO: CORRIGIDA (Botão Voltar do Celular fecha Zoom + Memória de Categoria)
 // ============================================================================================
 // Adicione isto na PRIMEIRA LINHA do seu catalogo.js
-var SUPABASE_URL = 'https://cqkkvhrtofowqpvamtcx.supabase.co'; 
-var BUCKET_NAME = 'imagens-projeto';
+if (typeof SUPABASE_URL === 'undefined') {
+    var SUPABASE_URL = 'https://cqkkvhrtofowqpvamtcx.supabase.co'; 
+    var BUCKET_NAME = 'imagens-projeto';
+}
+
 const CART_STORAGE_KEY = 'jcoVendasCart';
 let cart = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || {};
 let allProducts = []; 
