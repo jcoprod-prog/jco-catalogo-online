@@ -212,9 +212,10 @@ def api_meus_pedidos():
     produto_ids = list(set([item['produto_id'] for item in itens]))
     produtos_dict = {}
     if produto_ids:
-        resp_produtos = supabase.table('produtos_nuvem').select('id, nome, name').in_('id', produto_ids).execute()
+        # CORREÇÃO: Pedimos apenas as colunas 'id' e 'nome'
+        resp_produtos = supabase.table('produtos_nuvem').select('id, nome').in_('id', produto_ids).execute()
         for p in resp_produtos.data:
-            produtos_dict[str(p['id'])] = p.get('nome') or p.get('name') or "Produto Misterioso"
+            produtos_dict[str(p['id'])] = p.get('nome') or "Produto Misterioso"
 
     # 4. Junta tudo para o JavaScript exibir na tela bonitinho
     for pedido in pedidos:
