@@ -3,7 +3,9 @@
 // DESCRIÇÃO: Lógica do frontend para o catálogo online de produtos.
 // VERSÃO: CORRIGIDA (Botão Voltar do Celular fecha Zoom + Memória de Categoria)
 // ============================================================================================
-
+// Adicione isto na PRIMEIRA LINHA do seu catalogo.js
+const SUPABASE_URL = 'https://cqkkvhrtofowqpvamtcx.supabase.co'; 
+const BUCKET_NAME = 'imagens-projeto';
 const CART_STORAGE_KEY = 'jcoVendasCart';
 let cart = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || {};
 let allProducts = []; 
@@ -193,7 +195,8 @@ async function fetchCategories() {
 
         const allItem = document.createElement('div');
         allItem.className = 'category-item active';
-        allItem.innerHTML = `<img src="/static/images/todos-produtos.png" alt="Todos"><p>Todos</p>`;
+        // Substitua a linha antiga por esta:
+        allItem.innerHTML = `<p style="font-weight: bold; text-align: center; width: 100%; padding: 10px;">Todos</p>`;
         allItem.onclick = () => filterByCategory(null, allItem, 'Todos os Produtos');
         categoryListDiv.appendChild(allItem);
 

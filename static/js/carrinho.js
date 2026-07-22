@@ -2,11 +2,19 @@
 // VERSÃO AJUSTADA PARA USAR API, SEM DEPENDÊNCIA DE CACHE
 
 // =================================================================================
+// CONFIGURAÇÕES PÚBLICAS DO BANCO DE IMAGENS (SEGURO EXPOR)
+// =================================================================================
+// Lembre-se de trocar SEU_CODIGO pela URL real do seu Supabase.
+// A sua senha (KEY) continua segura no Python!
+const SUPABASE_URL = 'https://cqkkvhrtofowqpvamtcx.supabase.co'; 
+const BUCKET_NAME = 'imagens-projeto';
+
+// =================================================================================
 // CHAVES DE ARMAZENAMENTO E CONSTANTES
 // =================================================================================
 const CART_STORAGE_KEY = 'jcoVendasCart';
-const ORDERS_STORAGE_KEY = 'jcoMeusPedidos'; // AJUSTADO PARA COMBINAR COM O HTML
-const MINIMUM_ORDER_VALUE = 0.10; // Valor mínimo do pedido
+const ORDERS_STORAGE_KEY = 'jcoMeusPedidos'; 
+const MINIMUM_ORDER_VALUE = 0.10; 
 
 // Variáveis Globais
 let currentCartProducts = []; 
@@ -73,6 +81,7 @@ async function renderCart() {
             grandTotal += subtotal; 
 
             let imageUrl = 'https://via.placeholder.com/80';
+            // Como declaramos lá em cima, agora o JS vai achar a URL e o BUCKET!
             if (product.photo_path && typeof SUPABASE_URL !== 'undefined' && typeof BUCKET_NAME !== 'undefined') {
                  imageUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${product.photo_path}`;
             }
