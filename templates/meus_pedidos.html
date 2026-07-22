@@ -9,13 +9,26 @@
     <style>
         .pedidos-container { padding: 20px; max-width: 600px; margin: 0 auto; }
         .pedido-card { background: white; border-radius: 8px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .pedido-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; }
-        .pedido-header h3 { margin: 0; color: #333; }
+        
+        /* Estilos do Resumo (Sempre visível) */
+        .pedido-resumo { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .pedido-info { display: flex; flex-direction: column; gap: 5px; }
+        .pedido-info h3 { margin: 0; color: #333; font-size: 1.1em; }
+        .data-hora { font-size: 0.85em; color: #777; }
+        .status-container { display: flex; align-items: center; gap: 10px; }
+        
+        /* Etiqueta de Status */
         .status { font-weight: bold; padding: 5px 10px; border-radius: 20px; font-size: 0.85em; text-transform: uppercase; }
-        /* Cores dos status */
         .status-pendente { background: #fff3cd; color: #856404; }
         .status-aceito { background: #d4edda; color: #155724; }
         .status-cancelado { background: #f8d7da; color: #721c24; }
+        
+        .icone-expandir { color: #007bff; transition: transform 0.3s; }
+        
+        /* Estilos dos Detalhes (Escondido por padrão) */
+        .pedido-detalhes { display: none; border-top: 1px solid #eee; margin-top: 15px; padding-top: 15px; }
+        .info-cliente { background: #f9f9f9; padding: 10px; border-radius: 6px; margin-bottom: 15px; }
+        .info-cliente p { margin: 5px 0; font-size: 0.9em; color: #444; }
         
         .item-lista { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95em; color: #555; }
         .total-pedido { font-weight: bold; font-size: 1.1em; text-align: right; margin-top: 15px; color: #28a745; border-top: 1px solid #eee; padding-top: 10px;}
@@ -25,7 +38,7 @@
 <body style="background-color: #f4f4f9;">
     <div class="pedidos-container">
         <a href="/" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar à Loja</a>
-        <h2><i class="fas fa-receipt"></i> Acompanhar Meus Pedidos</h2>
+        <h2><i class="fas fa-receipt"></i> Meus Pedidos</h2>
         <div id="lista-pedidos">
             <p>Buscando seus pedidos...</p>
         </div>
@@ -34,7 +47,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const listaDiv = document.getElementById('lista-pedidos');
-            // Pega os IDs da memória do celular
             const orderIds = JSON.parse(localStorage.getItem('jcoMeusPedidos')) || [];
 
             if (orderIds.length === 0) {
@@ -43,7 +55,6 @@
             }
 
             try {
-                // Manda os IDs para o Python buscar
                 const response = await fetch('/api/meus_pedidos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -58,12 +69,14 @@
                     return;
                 }
 
-                listaDiv.innerHTML = ''; // Limpa o "Buscando..."
+                listaDiv.innerHTML = ''; 
                 
                 pedidos.forEach(pedido => {
-                    // Define a cor da etiqueta baseada no status
                     const statusAtual = (pedido.status || 'pendente').toLowerCase();
                     const statusClass = `status-${statusAtual}`;
+                    
+                    // Formata a data e hora do pedido
+                    const dataFormatada = pedido.criado_em ? new Date(pedido.criado_em).toLocaleString('pt-BR') : 'Data não disponível';
                     
                     let itensHtml = '';
                     pedido.itens_detalhados.forEach(item => {
@@ -79,17 +92,49 @@
                     const card = document.createElement('div');
                     card.className = 'pedido-card';
                     card.innerHTML = `
-                        <div class="pedido-header">
-                            <h3>Pedido #${pedido.id}</h3>
-                            <span class="status ${statusClass}">${statusAtual}</span>
+                        <!-- CABEÇALHO RESUMIDO -->
+                        <div class="pedido-resumo">
+                            <div class="pedido-info">
+                                <h3>Pedido #${pedido.id}</h3>
+                                <span class="data-hora"><i class="far fa-clock"></i> ${dataFormatada}</span>
+                            </div>
+                            <div class="status-container">
+                                <span class="status ${statusClass}">${statusAtual}</span>
+                                <i class="fas fa-chevron-down icone-expandir"></i>
+                            </div>
                         </div>
-                        <div class="pedido-itens">
-                            ${itensHtml}
-                        </div>
-                        <div class="total-pedido">
-                            Total: R$ ${parseFloat(pedido.total).toFixed(2).replace('.', ',')}
+                        
+                        <!-- DETALHES ESCONDIDOS -->
+                        <div class="pedido-detalhes">
+                            <div class="info-cliente">
+                                <p><strong><i class="fas fa-user"></i> Cliente:</strong> ${pedido.cliente_nome || 'Não informado'}</p>
+                                <p><strong><i class="fas fa-map-marker-alt"></i> Endereço:</strong> ${pedido.cliente_endereco || 'Não informado'}</p>
+                                <p><strong><i class="fas fa-comment-alt"></i> Obs:</strong> ${pedido.observacoes || 'Nenhuma'}</p>
+                            </div>
+                            <div class="pedido-itens">
+                                ${itensHtml}
+                            </div>
+                            <div class="total-pedido">
+                                Total: R$ ${parseFloat(pedido.total).toFixed(2).replace('.', ',')}
+                            </div>
                         </div>
                     `;
+
+                    // Adiciona o evento de clique para abrir e fechar
+                    const resumo = card.querySelector('.pedido-resumo');
+                    const detalhes = card.querySelector('.pedido-detalhes');
+                    const icone = card.querySelector('.icone-expandir');
+
+                    resumo.addEventListener('click', () => {
+                        if (detalhes.style.display === 'block') {
+                            detalhes.style.display = 'none';
+                            icone.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                        } else {
+                            detalhes.style.display = 'block';
+                            icone.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                        }
+                    });
+
                     listaDiv.appendChild(card);
                 });
 
