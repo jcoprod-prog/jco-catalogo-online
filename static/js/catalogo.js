@@ -17,40 +17,43 @@ let currentCategoryId = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     
-    // =========================================================
+    /// =========================================================
     // === INÍCIO: SISTEMA DA TELA DE BOAS VINDAS E REGISTRO ===
     // =========================================================
     const modalBoasVindas = document.getElementById('modal-boas-vindas');
     const formBoasVindas = document.getElementById('form-boas-vindas');
 
-    // Procura na memória se o cliente já se cadastrou antes
     let clienteNome = localStorage.getItem('jcoClienteNome');
     let clienteZap = localStorage.getItem('jcoClienteZap');
+    
+    // NOVO: Verifica qual foi o dia da última visita
+    let ultimaVisita = localStorage.getItem('jcoUltimaVisita');
+    const dataHoje = new Date().toLocaleDateString(); // Ex: "21/07/2026"
 
     if (!clienteNome || !clienteZap) {
-        // Se é a primeira vez, mostra a tela e bloqueia a rolagem do fundo
         if (modalBoasVindas) {
             modalBoasVindas.style.display = 'flex';
             document.body.style.overflow = 'hidden'; 
         }
     } else {
-        // Se já conhecemos, manda o aviso pro servidor silenciosamente
-        registrarAcesso(clienteNome, clienteZap);
+        // Só avisa o Supabase se a última visita NÃO foi hoje
+        if (ultimaVisita !== dataHoje) {
+            registrarAcesso(clienteNome, clienteZap);
+            localStorage.setItem('jcoUltimaVisita', dataHoje); // Atualiza pro dia de hoje
+        }
     }
 
-    // Quando o cliente clica no botão verde de entrar
     if (formBoasVindas) {
         formBoasVindas.addEventListener('submit', (e) => {
-            e.preventDefault(); // Impede a página de recarregar
+            e.preventDefault(); 
             const nomeInput = document.getElementById('bv-nome').value.trim();
             const zapInput = document.getElementById('bv-whatsapp').value.trim();
 
             if(nomeInput && zapInput) {
-                // Grava na memória para não perguntar de novo amanhã
                 localStorage.setItem('jcoClienteNome', nomeInput);
                 localStorage.setItem('jcoClienteZap', zapInput);
+                localStorage.setItem('jcoUltimaVisita', dataHoje); // Salva o dia de hoje
                 
-                // Esconde a tela e libera o catálogo
                 modalBoasVindas.style.display = 'none';
                 document.body.style.overflow = 'auto'; 
                 
