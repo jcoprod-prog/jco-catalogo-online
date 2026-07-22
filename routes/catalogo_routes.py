@@ -85,7 +85,8 @@ def api_products():
             "description": prod.get("descricao", prod.get("description", "")),
             "price_catalog": prod.get("preco_catalogo", prod.get("price_catalog", 0)),
             "stock_quantity": estoque,
-            "photo_path": prod.get("caminho_foto", prod.get("photo_path", ""))
+            "photo_path": prod.get("foto_path", prod.get("caminho_foto", ""))
+            
         })
         
     return jsonify({
@@ -118,7 +119,7 @@ def api_products_by_ids():
             "description": prod.get("descricao") or prod.get("description") or "",
             "price_catalog": prod.get("preco_catalogo") or prod.get("price_catalog") or 0.0,
             "stock_quantity": prod.get("estoque_atual") or prod.get("stock_quantity") or 0,
-            "photo_path": prod.get("caminho_foto") or prod.get("photo_path") or ""
+            "photo_path": prod.get("foto_path") or prod.get("caminho_foto") or ""
         })
 
     return jsonify(produtos)
