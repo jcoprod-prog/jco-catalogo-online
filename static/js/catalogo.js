@@ -16,6 +16,60 @@ let isLoading = false;
 let currentCategoryId = null; 
 
 document.addEventListener('DOMContentLoaded', function() {
+    
+    // =========================================================
+    // === INÍCIO: SISTEMA DA TELA DE BOAS VINDAS E REGISTRO ===
+    // =========================================================
+    const modalBoasVindas = document.getElementById('modal-boas-vindas');
+    const formBoasVindas = document.getElementById('form-boas-vindas');
+
+    // Procura na memória se o cliente já se cadastrou antes
+    let clienteNome = localStorage.getItem('jcoClienteNome');
+    let clienteZap = localStorage.getItem('jcoClienteZap');
+
+    if (!clienteNome || !clienteZap) {
+        // Se é a primeira vez, mostra a tela e bloqueia a rolagem do fundo
+        if (modalBoasVindas) {
+            modalBoasVindas.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; 
+        }
+    } else {
+        // Se já conhecemos, manda o aviso pro servidor silenciosamente
+        registrarAcesso(clienteNome, clienteZap);
+    }
+
+    // Quando o cliente clica no botão verde de entrar
+    if (formBoasVindas) {
+        formBoasVindas.addEventListener('submit', (e) => {
+            e.preventDefault(); // Impede a página de recarregar
+            const nomeInput = document.getElementById('bv-nome').value.trim();
+            const zapInput = document.getElementById('bv-whatsapp').value.trim();
+
+            if(nomeInput && zapInput) {
+                // Grava na memória para não perguntar de novo amanhã
+                localStorage.setItem('jcoClienteNome', nomeInput);
+                localStorage.setItem('jcoClienteZap', zapInput);
+                
+                // Esconde a tela e libera o catálogo
+                modalBoasVindas.style.display = 'none';
+                document.body.style.overflow = 'auto'; 
+                
+                registrarAcesso(nomeInput, zapInput);
+            }
+        });
+    }
+
+    function registrarAcesso(nome, zap) {
+        fetch('/api/registrar_acesso', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nome: nome, whatsapp: zap })
+        }).catch(e => console.log("Erro no registro silencioso", e));
+    }
+    // =========================================================
+    // === FIM: SISTEMA DA TELA DE BOAS VINDAS E REGISTRO ======
+    // =========================================================
+
     console.log("Catálogo iniciado. Carregando dados iniciais...");
     loadInitialData();
     

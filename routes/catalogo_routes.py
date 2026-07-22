@@ -232,3 +232,43 @@ def api_meus_pedidos():
     pedidos.sort(key=lambda x: x['id'], reverse=True)
 
     return jsonify(pedidos)
+
+@catalogo_bp.route('/api/registrar_acesso', methods=['POST'])
+def api_registrar_acesso():
+    supabase = get_supabase()
+    if not supabase:
+        return jsonify({"status": "erro"}), 500
+
+    dados = request.get_json() or {}
+    nome = dados.get('nome', 'Desconhecido')
+    whatsapp = dados.get('whatsapp', 'Não informado')
+    
+    navegador = request.user_agent.string if request.user_agent else ''
+    if 'Android' in navegador:
+        aparelho = 'Celular Android'
+    elif 'iPhone' in navegador:
+        aparelho = 'iPhone'
+    elif 'Windows' in navegador:
+        aparelho = 'Computador Windows'
+    else:
+        aparelho = 'Outro'
+
+    registro = {
+        "visitante": nome,
+        "whatsapp": whatsapp,
+        "aparelho": aparelho
+    }
+    
+    try:
+        # Salva o nome e whatsapp reais no banco de dados
+        supabase.table('registro_acessos').insert(registro).execute()
+    except Exception as e:
+        print("Erro ao registrar acesso:", e)
+        # Plano B caso a coluna whatsapp não tenha sido criada corretamente
+        try:
+            registro_b = {"visitante": f"{nome} - {whatsapp}", "aparelho": aparelho}
+            supabase.table('registro_acessos').insert(registro_b).execute()
+        except:
+            pass
+        
+    return jsonify({"status": "ok"}), 200
