@@ -6,8 +6,8 @@
 // =================================================================================
 // Lembre-se de trocar SEU_CODIGO pela URL real do seu Supabase.
 // A sua senha (KEY) continua segura no Python!
-const SUPABASE_URL = 'https://cqkkvhrtofowqpvamtcx.supabase.co'; 
-const BUCKET_NAME = 'imagens-projeto';
+var SUPABASE_URL = 'https://cqkkvhrtofowqpvamtcx.supabase.co'; 
+var BUCKET_NAME = 'imagens-projeto';
 
 // =================================================================================
 // CHAVES DE ARMAZENAMENTO E CONSTANTES

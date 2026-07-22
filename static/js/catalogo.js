@@ -4,8 +4,8 @@
 // VERSÃO: CORRIGIDA (Botão Voltar do Celular fecha Zoom + Memória de Categoria)
 // ============================================================================================
 // Adicione isto na PRIMEIRA LINHA do seu catalogo.js
-const SUPABASE_URL = 'https://cqkkvhrtofowqpvamtcx.supabase.co'; 
-const BUCKET_NAME = 'imagens-projeto';
+var SUPABASE_URL = 'https://cqkkvhrtofowqpvamtcx.supabase.co'; 
+var BUCKET_NAME = 'imagens-projeto';
 const CART_STORAGE_KEY = 'jcoVendasCart';
 let cart = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || {};
 let allProducts = []; 
@@ -195,7 +195,6 @@ async function fetchCategories() {
 
         const allItem = document.createElement('div');
         allItem.className = 'category-item active';
-        // Substitua a linha antiga por esta:
         allItem.innerHTML = `<p style="font-weight: bold; text-align: center; width: 100%; padding: 10px;">Todos</p>`;
         allItem.onclick = () => filterByCategory(null, allItem, 'Todos os Produtos');
         categoryListDiv.appendChild(allItem);
