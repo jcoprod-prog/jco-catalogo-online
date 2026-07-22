@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Carrinho - JCO Vendas</title>
 
-    <!-- INÍCIO DA CORREÇÃO 1: Passa as variáveis do Supabase para o JavaScript -->
+    <!-- INÍCIO DA CORREÇÃO 1: Base do Supabase (Coloque sua URL real abaixo) -->
     <script>
-        const SUPABASE_URL = "{{ config.SUPABASE_URL }}";
+        const SUPABASE_URL = "https://SEU_LINK_AQUI.supabase.co"; 
         const BUCKET_NAME = "imagens-projeto";
     </script>
     <!-- FIM DA CORREÇÃO 1 -->
@@ -98,7 +98,7 @@
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/carrinho.js') }}"></script>
+    <!-- SCRIPTS NO FINAL: Quebrador de cache inserido (v='2026') -->
+    <script src="{{ url_for('static', filename='js/carrinho.js', v='2026') }}"></script>
 </body>
 </html>
-

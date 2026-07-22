@@ -1,17 +1,7 @@
 // C:\Users\Administrador\Desktop\backupPaiton\pdv-loja\app\static\js\carrinho.js
 // VERSÃO AJUSTADA PARA USAR API, SEM DEPENDÊNCIA DE CACHE
 
-// =================================================================================
-// CONFIGURAÇÕES PÚBLICAS DO BANCO DE IMAGENS (SEGURO EXPOR)
-// =================================================================================
-// Lembre-se de trocar SEU_CODIGO pela URL real do seu Supabase.
-// A sua senha (KEY) continua segura no Python!
-if (typeof SUPABASE_URL === 'undefined') {
-    var SUPABASE_URL = 'https://cqkkvhrtofowqpvamtcx.supabase.co'; 
-    var BUCKET_NAME = 'imagens-projeto';
-}
-
-
+// AS VARIÁVEIS SUPABASE_URL E BUCKET_NAME AGORA VÊM DIRETAMENTE DO HTML!
 
 // =================================================================================
 // CHAVES DE ARMAZENAMENTO E CONSTANTES
@@ -85,7 +75,7 @@ async function renderCart() {
             grandTotal += subtotal; 
 
             let imageUrl = 'https://via.placeholder.com/80';
-            // Como declaramos lá em cima, agora o JS vai achar a URL e o BUCKET!
+            // O JS vai achar a URL e o BUCKET que foram declarados no HTML!
             if (product.photo_path && typeof SUPABASE_URL !== 'undefined' && typeof BUCKET_NAME !== 'undefined') {
                  imageUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${product.photo_path}`;
             }

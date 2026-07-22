@@ -3,11 +3,8 @@
 // DESCRIÇÃO: Lógica do frontend para o catálogo online de produtos.
 // VERSÃO: CORRIGIDA (Botão Voltar do Celular fecha Zoom + Memória de Categoria)
 // ============================================================================================
-// Adicione isto na PRIMEIRA LINHA do seu catalogo.js
-if (typeof SUPABASE_URL === 'undefined') {
-    var SUPABASE_URL = 'https://cqkkvhrtofowqpvamtcx.supabase.co'; 
-    var BUCKET_NAME = 'imagens-projeto';
-}
+
+// AS VARIÁVEIS SUPABASE_URL E BUCKET_NAME AGORA VÊM DIRETAMENTE DO HTML!
 
 const CART_STORAGE_KEY = 'jcoVendasCart';
 let cart = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || {};

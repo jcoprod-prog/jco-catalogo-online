@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JCO Vendas - Catálogo Online</title>
 
+    <!-- 1. BASE DO SUPABASE: Coloque sua URL real abaixo para evitar erros do Flask -->
     <script>
-        const SUPABASE_URL = "{{ config.SUPABASE_URL }}";
+        const SUPABASE_URL = "https://cqkkvhrtofowqpvamtcx.supabase.co"; 
         const BUCKET_NAME = "imagens-projeto";
     </script>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/catalogo.css', v=version_timestamp) }}">
+    <!-- 2. CSS COM QUEBRA DE CACHE SEGURO (v='2026' entre aspas) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/catalogo.css', v='2026') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
@@ -86,13 +88,15 @@
             </div>
             
             <div id="load-more-container" style="text-align: center; padding: 20px;">
-                </div>
-            </section>
-            <div id="imageZoomModal" class="image-zoom-modal" onclick="closeImageModal()">
-                <span class="close-zoom">&times;</span>
-                <img class="modal-zoom-content" id="img01">
-                <div id="caption"></div>
             </div>
+        </section>
+
+        <!-- O Modal de Imagem foi colocado fora da section (local correto) -->
+        <div id="imageZoomModal" class="image-zoom-modal" onclick="closeImageModal()">
+            <span class="close-zoom">&times;</span>
+            <img class="modal-zoom-content" id="img01">
+            <div id="caption"></div>
+        </div>
     </main>
 
     <footer>
@@ -122,7 +126,6 @@
             
             <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
             
-            <!-- Substitua os textos entre colchetes pelos dados reais -->
             <p style="color: #777; font-size: 0.9em; text-align: left; line-height: 1.5;">
                 <strong><i class="fas fa-map-marker-alt"></i> Onde estamos:</strong><br>
                 Rua Alcebíades Nere de Oliveira ,Nº 168 Próximo da rádio 
@@ -136,23 +139,20 @@
     </div>
 <!-- FIM: MODAL SOBRE NÓS -->
 
-    <!-- SCRIPTS NO FINAL (AGORA DO JEITO CERTO) -->
+    <!-- SCRIPTS NO FINAL: Garantindo a leitura segura do JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/catalogo.js', v=version_timestamp) }}"></script>
+    <script src="{{ url_for('static', filename='js/catalogo.js', v='2026') }}"></script>
     
     <script>
-        // Função para mostrar a tela "Sobre Nós"
         function abrirSobreNos() {
             document.getElementById('modal-sobre').style.display = 'flex';
             
-            // Isso aqui fecha o menu lateral automaticamente para a tela ficar limpa
             const navDrawer = document.getElementById('nav-drawer');
             const overlay = document.getElementById('overlay');
             if(navDrawer) navDrawer.classList.remove('is-open');
             if(overlay) overlay.classList.remove('is-open');
         }
 
-        // Função para esconder a tela "Sobre Nós"
         function fecharSobreNos() {
             document.getElementById('modal-sobre').style.display = 'none';
         }
