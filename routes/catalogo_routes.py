@@ -40,7 +40,8 @@ def api_categories():
         categorias.append({
             "id": cat.get("id"),
             "name": cat.get("nome", cat.get("name", "Sem Nome")),
-            "photo_path": cat.get("caminho_foto", cat.get("photo_path", ""))
+            # 👇 CORREÇÃO: Agora ele busca exatamente a coluna 'foto_path' que está no seu Supabase!
+            "photo_path": cat.get("foto_path", "")
         })
         
     return jsonify({"items": categorias})
