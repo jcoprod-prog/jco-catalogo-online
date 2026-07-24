@@ -195,7 +195,12 @@ async function fetchCategories() {
 
         const allItem = document.createElement('div');
         allItem.className = 'category-item active';
-        allItem.innerHTML = `<p style="font-weight: bold; text-align: center; width: 100%; padding: 10px;">Todos</p>`;
+        allItem.innerHTML = `
+            <div style="width: 80px; height: 80px; background-color: #f1f5f9; border-radius: 12px; display: flex; justify-content: center; align-items: center; margin: 0 auto 10px auto; border: 2px solid #e2e8f0;">
+                <i class="fas fa-store" style="font-size: 2.2rem; color: #3b82f6;"></i>
+            </div>
+            <p style="margin: 0; font-weight: bold; text-align: center;">Todos</p>
+        `;
         allItem.onclick = () => filterByCategory(null, allItem, 'Todos os Produtos');
         categoryListDiv.appendChild(allItem);
 
